@@ -18,8 +18,9 @@ def main(params):
 
     if url[-2:] == "gz":
         file_name = url.split("/")[-1]
+        # os.system(f"wget {url} -O {file_name}")
+        # os.system(f"gunzip -c {file_name} > {csv_name}")
         os.system(f"wget {url} -O {file_name}")
-        os.system(f"gunzip -c {file_name} > {csv_name}")
     else:
         os.system(f"wget {url} -O {csv_name}")
 
@@ -28,7 +29,7 @@ def main(params):
     engine.connect()
 
     df_iter = pd.read_csv(
-        csv_name,
+        file_name,
         iterator=True,
         chunksize=100000,
     )
