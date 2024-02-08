@@ -2,8 +2,8 @@ blocks:
 - all_upstream_blocks_executed: true
   color: null
   configuration:
-    data_provider: postgres
-    data_provider_profile: dev
+    data_provider: bigquery
+    data_provider_profile: default
     dbt: {}
     export_write_policy: append
     limit: 1000
@@ -41,7 +41,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: '2024-02-07T04:38:16+00:00'
+updated_at: '2024-02-07 22:36:27'
 uuid: test_config
 variables_dir: /home/src/mage_data/magic-zoomcamp
 widgets: []

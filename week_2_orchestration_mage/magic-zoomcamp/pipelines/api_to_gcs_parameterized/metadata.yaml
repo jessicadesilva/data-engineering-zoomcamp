@@ -3,51 +3,35 @@ blocks:
   color: null
   configuration: {}
   downstream_blocks:
-  - fill_in_missing_values
+  - transform_taxi_data
   executor_config: null
   executor_type: local_python
-  has_callback: null
+  has_callback: false
   language: python
-  name: load_titanic
+  name: load_api_data
   retry_config: null
   status: executed
   timeout: null
   type: data_loader
   upstream_blocks: []
-  uuid: load_titanic
+  uuid: load_api_data
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
   downstream_blocks:
-  - export_titanic_clean
+  - export_taxi_to_gcs_parameter
   executor_config: null
   executor_type: local_python
-  has_callback: null
+  has_callback: false
   language: python
-  name: fill_in_missing_values
+  name: transform_taxi_data
   retry_config: null
   status: executed
   timeout: null
   type: transformer
   upstream_blocks:
-  - load_titanic
-  uuid: fill_in_missing_values
-- all_upstream_blocks_executed: true
-  color: null
-  configuration: {}
-  downstream_blocks: []
-  executor_config: null
-  executor_type: local_python
-  has_callback: null
-  language: python
-  name: export_titanic_clean
-  retry_config: null
-  status: executed
-  timeout: null
-  type: data_exporter
-  upstream_blocks:
-  - fill_in_missing_values
-  uuid: export_titanic_clean
+  - load_api_data
+  uuid: transform_taxi_data
 - all_upstream_blocks_executed: true
   color: null
   configuration: {}
@@ -56,25 +40,26 @@ blocks:
   executor_type: local_python
   has_callback: false
   language: python
-  name: test_gcs
+  name: export_taxi_to_gcs_parameter
   retry_config: null
-  status: executed
+  status: updated
   timeout: null
-  type: data_loader
-  upstream_blocks: []
-  uuid: test_gcs
+  type: data_exporter
+  upstream_blocks:
+  - transform_taxi_data
+  uuid: export_taxi_to_gcs_parameter
 cache_block_output_in_memory: false
 callbacks: []
 concurrency_config: {}
 conditionals: []
-created_at: null
+created_at: '2024-02-07 23:02:23.363779+00:00'
 data_integration: null
 description: null
 executor_config: {}
 executor_count: 1
 executor_type: null
 extensions: {}
-name: example_pipeline
+name: api_to_gcs_parameterized
 notification_config: {}
 remote_variables_dir: null
 retry_config: {}
@@ -84,7 +69,7 @@ settings:
 spark_config: {}
 tags: []
 type: python
-updated_at: '2024-02-07 22:55:25'
-uuid: example_pipeline
+updated_at: '2024-02-08 00:56:57'
+uuid: api_to_gcs_parameterized
 variables_dir: /home/src/mage_data/magic-zoomcamp
 widgets: []
