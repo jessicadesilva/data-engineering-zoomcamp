@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: staging
+    # databases in dbt are datasets in BigQuery
+    database: iron-cycle-412122
+    schema: trips_data_all
+
+    tables:
+      - name: green_tripdata
+      - name: yellow_tripdata
