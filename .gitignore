@@ -4,6 +4,10 @@ output.csv
 taxi+_zone_lookup.csv
 yellow_tripdata_2021-01.csv
 yellow_tripdata_2021-01.csv.gz
+fhv_tripdata_2019-10.csv
+fhvhv_tripdata_2021-01.csv
+taxi+_zone_lookup.csv
+week_5_batch_processing/data/raw/*
 ny_taxi_postgres_data/
 keys/
 
