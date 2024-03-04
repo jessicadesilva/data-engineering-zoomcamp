@@ -8,6 +8,7 @@ fhv_tripdata_2019-10.csv
 fhvhv_tripdata_2021-01.csv
 taxi+_zone_lookup.csv
 week_5_batch_processing/data/raw/*
+week_5_batch_processing/.venv/
 ny_taxi_postgres_data/
 keys/
 
