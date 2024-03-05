@@ -30,7 +30,6 @@ public class JsonProducer {
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));
         props.put("sasl.mechanism", "PLAIN");
-        props.put("client.dns.lookup", "use_all_dns_ips");
         props.put("session.timeout.ms", "45000");
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
@@ -47,14 +46,9 @@ public class JsonProducer {
     }
 
     public void publishRides(List<Ride> rides) throws ExecutionException, InterruptedException {
-	    KafkaProducer<String, Ride> kafkaProducer = new KafkaProducer<String, Ride>(props);
+	    var kafkaProducer = new KafkaProducer<String, Ride>(props);
 	    for(Ride ride: rides) {
-		    kafkaProducer.send(new ProducerRecord<>("rides", String.valueOf(ride.DOLocationID), ride), (metadata, exception) -> {
-                if(exception != null) {
-                    System.out.println(exception.getMessage());
-                }
-            });
-            Thread.sleep(500);
+		    kafkaProducer.send(new ProducerRecord<>("rides", String.valueOf(ride.DOLocationID), ride));
 	    }
     }
 	public static void main(String[] args) throws IOException, CsvException, ExecutionException, InterruptedException {
