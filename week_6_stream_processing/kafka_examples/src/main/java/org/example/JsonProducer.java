@@ -26,7 +26,7 @@ public class JsonProducer {
         // coming froming Confluent Cloud Configuration snippet
         String userName = System.getenv("CLUSTER_API_KEY");
         String passWord = System.getenv("CLUSTER_API_SECRET");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "pkc-12576z.us-west2.gcp.confluent.cloud:9092");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "pkc-12576z.us-west2.gcp.confluent.cloud:9092");
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));
         props.put("sasl.mechanism", "PLAIN");
@@ -49,6 +49,7 @@ public class JsonProducer {
 	    var kafkaProducer = new KafkaProducer<String, Ride>(props);
 	    for(Ride ride: rides) {
 		    kafkaProducer.send(new ProducerRecord<>("rides", String.valueOf(ride.DOLocationID), ride));
+            Thread.sleep(500);
 	    }
     }
 	public static void main(String[] args) throws IOException, CsvException, ExecutionException, InterruptedException {
