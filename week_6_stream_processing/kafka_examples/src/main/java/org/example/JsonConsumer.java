@@ -22,10 +22,11 @@ public class JsonConsumer {
 		// read in environment variables
 		String userName = System.getenv("CLUSTER_API_KEY");
 		String passWord = System.getenv("CLUSTER_API_SECRET");
+        String bootstrapServer = System.getenv("BOOTSTRAP_SERVER");
         System.out.println(userName);
         System.out.println(passWord);
 		
-		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "pkc-12576z.us-west2.gcp.confluent.cloud:9092");
+		props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));        props.put("sasl.mechanism", "PLAIN");
         props.put("client.dns.lookup", "use_all_dns_ips");

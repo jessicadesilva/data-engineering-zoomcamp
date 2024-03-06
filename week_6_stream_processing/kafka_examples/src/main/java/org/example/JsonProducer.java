@@ -26,7 +26,8 @@ public class JsonProducer {
         // coming froming Confluent Cloud Configuration snippet
         String userName = System.getenv("CLUSTER_API_KEY");
         String passWord = System.getenv("CLUSTER_API_SECRET");
-        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "pkc-12576z.us-west2.gcp.confluent.cloud:9092");
+        String bootstrapServer = System.getenv("BOOTSTRAP_SERVER");
+        props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         props.put("security.protocol", "SASL_SSL");
         props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));
         props.put("sasl.mechanism", "PLAIN");
