@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 import java.util.Scanner;
@@ -46,10 +47,16 @@ public class JsonProducer {
 
     }
 
-    public void publishRides(List<Ride> rides) throws ExecutionException, InterruptedException {
-	    var kafkaProducer = new KafkaProducer<String, Ride>(props);
-	    for(Ride ride: rides) {
-		    kafkaProducer.send(new ProducerRecord<>("rides", String.valueOf(ride.DOLocationID), ride));
+   public void publishRides(List<Ride> rides) throws ExecutionException, InterruptedException {
+        KafkaProducer<String, Ride> kafkaProducer = new KafkaProducer<String, Ride>(props);
+        for(Ride ride: rides) {
+            ride.tpep_pickup_datetime = LocalDateTime.now().minusMinutes(20);
+            ride.tpep_dropoff_datetime = LocalDateTime.now();
+            var record = kafkaProducer.send(new ProducerRecord<>("rides", String.valueOf(ride.PULocationID), ride), (metadata, exception) -> {
+                if(exception != null) {
+                    System.out.println(exception.getMessage());
+                }
+            });
             Thread.sleep(500);
 	    }
     }
