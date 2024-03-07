@@ -75,6 +75,36 @@ Options:
 
 p.s. The trip time between taxi zones does not take symmetricity into account, i.e. `A -> B` and `B -> A` are considered different trips. This applies to subsequent questions as well.
 
+```SQL
+CREATE MATERIALIZED VIEW taxi_zone_stats AS
+WITH trip_time AS (
+SELECT
+	tpep_dropoff_datetime - tpep_pickup_datetime AS trip_time,
+	pulocationid,
+	dolocationid
+FROM trip_data
+)
+SELECT
+	AVG(trip_time) AS avg_trip_time,
+	MIN(trip_time) AS min_trip_time,
+	MAX(trip_time) AS max_trip_time,
+	tz_pickup.Zone AS pickup_zone,
+	tz_dropoff.Zone AS dropoff_zone
+FROM trip_time
+JOIN taxi_zone AS tz_pickup ON tz_pickup.location_id=trip_time.pulocationid
+JOIN taxi_zone AS tz_dropoff ON tz_dropoff.location_id=trip_time.dolocationid
+GROUP BY pickup_zone, dropoff_zone;
+```
+
+```SQL
+SELECT
+pickup_zone,
+dropoff_zone,
+avg_trip_time AS max_avg
+FROM taxi_zone_stats
+WHERE avg_trip_time=(SELECT MAX(avg_trip_time) FROM taxi_zone_stats);
+```
+
 ## Question 2
 
 Recreate the MV(s) in question 1, to also find the **number of trips** for the pair of taxi zones with the highest average trip time.
@@ -84,6 +114,21 @@ Options:
 2. 3
 3. 10
 4. 1
+
+```SQL
+WITH max_avg_trip AS (
+SELECT
+	pickup_zone, dropoff_zone, avg_trip_time
+FROM taxi_zone_stats
+WHERE avg_trip_time=(SELECT MAX(avg_trip_time) FROM taxi_zone_stats))
+SELECT
+	COUNT(*),
+	max_avg_trip.pickup_zone,
+	max_avg_trip.dropoff_zone
+FROM max_avg_trip
+LEFT JOIN taxi_zone_stats ON taxi_zone_stats.pickup_zone=max_avg_trip.pickup_zone AND taxi_zone_stats.dropoff_zone=max_avg_trip.dropoff_zone
+GROUP BY 2, 3;
+```
 
 ## Question 3
 
@@ -101,3 +146,22 @@ Options:
 2. LaGuardia Airport, Lincoln Square East, JFK Airport
 3. Midtown Center, Upper East Side South, Upper East Side North
 4. LaGuardia Airport, Midtown Center, Upper East Side North
+
+```SQL
+CREATE MATERIALIZED VIEW latest_pickup_time AS
+SELECT tpep_pickup_datetime AS pickup_time
+FROM trip_data
+WHERE tpep_pickup_datetime=(SELECT MAX(tpep_pickup_datetime) FROM trip_data);
+```
+
+```SQL
+SELECT
+	taxi_zone.Zone AS pickup_zone,
+	COUNT(*) AS num_rides
+FROM trip_data
+JOIN taxi_zone ON taxi_zone.location_id=trip_data.pulocationid
+WHERE trip_data.tpep_pickup_datetime >= (SELECT pickup_time - INTERVAL '17 HOURS' FROM latest_pickup_time)
+GROUP BY pickup_zone
+ORDER BY num_rides DESC
+LIMIT 3;
+```
