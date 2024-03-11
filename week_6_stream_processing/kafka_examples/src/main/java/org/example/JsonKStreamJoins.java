@@ -20,23 +20,27 @@ public class JsonKStreamJoins {
 
     private Properties props = new Properties();
 
-    private static final String INPUT_RIDE_TOPIC = "rides";
-    private static final String INPUT_RIDE_LOCATION_TOPIC = "rides_location";
-    private static final String OUTPUT_TOPIC = "vendor_info";
+    public static final String INPUT_RIDE_TOPIC = "rides";
+    public static final String INPUT_RIDE_LOCATION_TOPIC = "rides_location";
+    public static final String OUTPUT_TOPIC = "vendor_info";
 
-    public JsonKStreamJoins() {
-        String userName = System.getenv("CLUSTER_API_KEY");
-        String passWord = System.getenv("CLUSTER_API_SECRET");
-        String bootstrapServer = System.getenv("BOOTSTRAP_SERVER");
-        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
-        props.put("security.protocol", "SASL_SSL");
-        props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));
-        props.put("sasl.mechanism", "PLAIN");
-        props.put("client.dns.lookup", "use_all_dns_ips");
-        props.put("session.timeout.ms", "45000");
-        // update application id
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "kafka_tutorial.kstream.joined.rides.pickuplocation.v1");
-        props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
+    public JsonKStreamJoins(Optional<Properties> properties) {
+        this.props = properties.orElseGet(() -> {
+            String userName = System.getenv("CLUSTER_API_KEY");
+            String passWord = System.getenv("CLUSTER_API_SECRET");
+            String bootstrapServer = System.getenv("BOOTSTRAP_SERVER");
+            props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
+            props.put("security.protocol", "SASL_SSL");
+            props.put("sasl.jaas.config", String.format("org.apache.kafka.common.security.plain.PlainLoginModule required username='%s' password='%s';", userName, passWord));
+            props.put("sasl.mechanism", "PLAIN");
+            props.put("client.dns.lookup", "use_all_dns_ips");
+            props.put("session.timeout.ms", "45000");
+            // update application id
+            props.put(StreamsConfig.APPLICATION_ID_CONFIG, "kafka_tutorial.kstream.joined.rides.pickuplocation.v1");
+            props.put(StreamsConfig.CACHE_MAX_BYTES_BUFFERING_CONFIG, 0);
+
+            return props;
+        });
     }
 
     public Topology createTopology() {
@@ -82,7 +86,7 @@ public class JsonKStreamJoins {
     }
 
     public static void main(String[] args) throws InterruptedException{
-        var object = new JsonKStreamJoins();
+        var object = new JsonKStreamJoins(Optional.empty());
         object.joinRidesPickupLocation();
     }
 }

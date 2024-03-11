@@ -1,14 +1,8 @@
 week_6_stream_processing/kafka_examples/.gradle
 week_6_stream_processing/kafka_examples/bin
 week_6_stream_processing/kafka_examples/!src/main/resources/rides.csv
-
-week_6_stream_processing/kafka_examples/build/classes
-week_6_stream_processing/kafka_examples/build/generated
-week_6_stream_processing/kafka_examples/build/libs
-week_6_stream_processing/kafka_examples/build/reports
-week_6_stream_processing/kafka_examples/build/resources
-week_6_stream_processing/kafka_examples/build/test-results
-week_6_stream_processing/kafka_examples/build/tmp
+week_6_stream_processing/kafka_examples/build/*
+week_6_stream_processing/kafka_examples/gradle/*
 green_tripdata_2019-09.csv
 green_tripdata_2019-09.csv.gz
 output.csv

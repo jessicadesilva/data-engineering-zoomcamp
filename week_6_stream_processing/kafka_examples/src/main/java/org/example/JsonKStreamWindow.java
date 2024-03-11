@@ -7,6 +7,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Produced;
+import org.apache.kafka.streams.kstream.TimeWindows;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serde;
@@ -15,17 +16,21 @@ import io.confluent.kafka.serializers.KafkaJsonDeserializer;
 import io.confluent.kafka.serializers.KafkaJsonSerializer;
 import org.example.customserdes.CustomSerdes;
 import org.example.data.Ride;
+import org.apache.kafka.streams.kstream.TimeWindows;
+import org.apache.kafka.streams.kstream.WindowedSerdes;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Optional;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
-public class JsonKStream {
+public class JsonKStreamWindow {
 
     private Properties props = new Properties();
 
-    public JsonKStream(Optional<Properties> properties) {
+    public JsonKStreamWindow(Optional<Properties> properties) {
         this.props = properties.orElseGet(() -> {
             String userName = System.getenv("CLUSTER_API_KEY");
             String passWord = System.getenv("CLUSTER_API_SECRET");
@@ -46,8 +51,9 @@ public class JsonKStream {
     public Topology createTopology() {
         StreamsBuilder streamsBuilder = new StreamsBuilder();
         var ridesStream = streamsBuilder.stream("rides", Consumed.with(Serdes.String(), CustomSerdes.getSerde(Ride.class)));
-        var puLocationCount = ridesStream.groupByKey().count().toStream();
-        puLocationCount.to("rides-pulocation-count", Produced.with(Serdes.String(), Serdes.Long()));
+        var puLocationCount = ridesStream.groupByKey().windowedBy(TimeWindows.ofSizeAndGrace(Duration.ofSeconds(10), Duration.ofSeconds(5))).count().toStream();
+        var windowSerde = WindowedSerdes.timeWindowedSerdeFrom(String.class, 10*1000);
+        puLocationCount.to("rides-pulocation-window-count", Produced.with(windowSerde, Serdes.Long()));
         return streamsBuilder.build();
     }
 
@@ -73,7 +79,7 @@ public class JsonKStream {
 
 
     public static void main(String[] args) {
-        var object = new JsonKStream(Optional.empty());
+        var object = new JsonKStreamWindow(Optional.empty());
         object.countPLocation();
     }
 }
