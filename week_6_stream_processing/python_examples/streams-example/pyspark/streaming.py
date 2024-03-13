@@ -9,7 +9,7 @@ from settings import (
 
 
 def read_from_kafka(consume_topic: str):
-    # Spark Streaming DataFrame, connect to Kafka topic served at host in bootrap.servers option
+    # Spark Streaming DataFrame, connect to Kafka topic served at host in bootstrap.servers option
     df_stream = (
         spark.readStream.format("kafka")
         .option("kafka.bootstrap.servers", "localhost:9092,broker:29092")
